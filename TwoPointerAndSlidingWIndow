@@ -1,0 +1,273 @@
+# 🚀 Two Pointer & Sliding Window Technique
+
+## 📌 Introduction
+Two Pointer and Sliding Window techniques are useful for solving problems involving **subarrays** and **substrings** efficiently. These methods help optimize problems related to finding the **longest**, **smallest**, or a specific condition-based **subarray/substring**.
+
+---
+
+## ✅ 1. Constant Window Size (Fixed Size Sliding Window)
+This approach is used when the window size is **fixed** and you need to compute some property for every **consecutive subarray**.
+
+### **🔹 Example: Find Maximum Sum of Subarray of Size K**
+💡 **Problem Statement:** Given an array of integers and a number `K`, find the maximum sum of any contiguous subarray of size `K`.
+
+### **🔴 Brute Force Approach (O(N*K))**
+```java
+public class FixedSizeWindow {
+    public static int maxSumBruteForce(int[] arr, int k) {
+        int n = arr.length;
+        int maxSum = Integer.MIN_VALUE;
+        
+        for (int i = 0; i <= n - k; i++) { // Try every starting point
+            int sum = 0;
+            for (int j = i; j < i + k; j++) { // Calculate sum for subarray
+                sum += arr[j];
+            }
+            maxSum = Math.max(maxSum, sum);
+        }
+        return maxSum;
+    }
+}
+```
+
+### **🟢 Optimized Sliding Window Approach (O(N))**
+```java
+public class FixedSizeWindowOptimized {
+    public static int maxSumSlidingWindow(int[] arr, int k) {
+        int n = arr.length;
+        int maxSum = 0, windowSum = 0;
+        
+        // Compute sum of first window
+        for (int i = 0; i < k; i++) {
+            windowSum += arr[i];
+        }
+        maxSum = windowSum;
+        
+        // Slide the window
+        for (int i = k; i < n; i++) {
+            windowSum += arr[i] - arr[i - k]; // Remove leftmost and add new element
+            maxSum = Math.max(maxSum, windowSum);
+        }
+        return maxSum;
+    }
+}
+```
+
+---
+
+## ✅ 2. Variable Window Size (Longest Subarray / Substring Problems)
+Used when we need to find **the longest or smallest subarray that satisfies a condition**.
+
+### **🔹 Example: Longest Subarray with Sum ≤ S**
+💡 **Problem Statement:** Given an array of positive numbers and a target sum `S`, find the longest subarray whose sum is ≤ `S`.
+
+### **🔴 Brute Force Approach (O(N²))**
+```java
+public class VariableWindowBrute {
+    public static int longestSubarray(int[] arr, int s) {
+        int n = arr.length;
+        int maxLen = 0;
+        
+        for (int i = 0; i < n; i++) {
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += arr[j];
+                if (sum <= s) {
+                    maxLen = Math.max(maxLen, j - i + 1);
+                }
+            }
+        }
+        return maxLen;
+    }
+}
+```
+
+### **🟢 Optimized Sliding Window Approach (O(N))**
+```java
+public class VariableWindowOptimized {
+    public static int longestSubarraySlidingWindow(int[] arr, int s) {
+        int maxLen = 0, left = 0, sum = 0;
+        
+        for (int right = 0; right < arr.length; right++) {
+            sum += arr[right];
+            
+            // Shrink the window until the sum is ≤ S
+            while (sum > s) {
+                sum -= arr[left];
+                left++;
+            }
+            maxLen = Math.max(maxLen, right - left + 1);
+        }
+        return maxLen;
+    }
+}
+```
+
+---
+
+## ✅ Expand and Shrink Concept
+The sliding window method uses **expansion** and **shrinkage**:
+
+1. **Expand**: Increase window size when the condition is met.
+2. **Shrink**: Reduce the window size when the condition is broken.
+
+This ensures an **optimal** solution in **O(N)** instead of **O(N²)**.
+
+---
+
+## ✅ More Problems to Practice
+- **Longest substring without repeating characters** (`Two Pointer + HashSet`)
+- **Smallest subarray with sum ≥ S** (`Expand and Shrink`)
+- **Find an anagram of a string in another string** (`Sliding Window + HashMap`)
+
+---
+
+## ✅ Key Takeaways
+- Use **Fixed Size Window** when the window size is constant.
+- Use **Variable Size Window** when you need to find the **longest or shortest** subarray satisfying a condition.
+- **Sliding Window** is an optimized approach that reduces **O(N²) to O(N)**.
+
+Happy Coding! 🚀
+
+# from deepseek
+
+# Two Pointer and Sliding Window Technique
+
+The **Two Pointer** and **Sliding Window** techniques are commonly used to solve problems involving arrays or strings, especially when dealing with subarrays or substrings. These techniques help optimize solutions by reducing time complexity from O(n²) or O(n³) to O(n).
+
+---
+
+## 1. Constant Window (Fixed Size)
+This technique is used when the size of the window (subarray or substring) is fixed. You slide the window over the array or string to perform calculations.
+
+### Example Problem:
+Find the maximum sum of any subarray of size `k`.
+
+#### Brute Force Approach:
+- Iterate through all possible subarrays of size `k` and calculate their sums.
+- Time Complexity: O(n*k)
+
+#### Optimal Approach (Sliding Window):
+- Use a fixed-size window to avoid recalculating the sum for overlapping elements.
+- Time Complexity: O(n)
+
+```java
+public class ConstantWindow {
+    public static int maxSumSubarray(int[] arr, int k) {
+        int n = arr.length;
+        if (n < k) return -1; // Edge case
+
+        // Calculate the sum of the first window
+        int windowSum = 0;
+        for (int i = 0; i < k; i++) {
+            windowSum += arr[i];
+        }
+        int maxSum = windowSum;
+
+        // Slide the window over the array
+        for (int i = k; i < n; i++) {
+            windowSum += arr[i] - arr[i - k]; // Add new element and remove the oldest
+            maxSum = Math.max(maxSum, windowSum);
+        }
+
+        return maxSum;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {1, 4, 2, 10, 2, 3, 1, 0, 20};
+        int k = 4;
+        System.out.println("Maximum sum of a subarray of size " + k + ": " + maxSumSubarray(arr, k));
+    }
+}
+
+2. Variable Window (Dynamic Size)
+This technique is used when the size of the window is not fixed. The window expands or shrinks based on a condition.
+
+Example Problem:
+Find the length of the longest subarray with a sum less than or equal to target.
+
+Brute Force Approach:
+Generate all possible subarrays and check the condition.
+
+Time Complexity: O(n²)
+
+Optimal Approach (Two Pointer/Sliding Window):
+Use two pointers (left and right) to represent the window.
+
+Expand the window by moving the right pointer and shrink it by moving the left pointer based on the condition.
+
+Time Complexity: O(n)
+
+java
+Copy
+public class VariableWindow {
+    public static int longestSubarrayWithSum(int[] arr, int target) {
+        int n = arr.length;
+        int left = 0, right = 0;
+        int currentSum = 0;
+        int maxLength = 0;
+
+        while (right < n) {
+            currentSum += arr[right]; // Expand the window
+
+            // Shrink the window if the sum exceeds the target
+            while (currentSum > target) {
+                currentSum -= arr[left];
+                left++;
+            }
+
+            // Update the maximum length if the current window is valid
+            maxLength = Math.max(maxLength, right - left + 1);
+            right++;
+        }
+
+        return maxLength;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {1, 2, 3, 4, 5};
+        int target = 11;
+        System.out.println("Length of the longest subarray with sum <= " + target + ": " + longestSubarrayWithSum(arr, target));
+    }
+}
+Key Points to Remember:
+Constant Window:
+
+Fixed size.
+
+Slide the window and update the result.
+
+Variable Window:
+
+Dynamic size.
+
+Expand the window when the condition is satisfied.
+
+Shrink the window when the condition is violated.
+
+Two Pointer Technique:
+
+Often used in problems involving sorted arrays or linked lists.
+
+One pointer starts at the beginning, and the other starts at the end.
+
+Sliding Window Technique:
+
+Used for problems involving subarrays or substrings.
+
+Reduces time complexity by avoiding redundant calculations.
+
+Practice Problems:
+Constant Window:
+
+Find the maximum average of any subarray of size k.
+
+Find the minimum sum of any subarray of size k.
+
+Variable Window:
+
+Find the length of the smallest subarray with a sum greater than or equal to target.
+
+Find the longest substring with at most k distinct characters.
+
+By practicing these problems, you'll get a better understanding of these techniques!
